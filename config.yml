@@ -1,0 +1,11 @@
+server:
+  type: simple
+  applicationContextPath: /blog-service
+  connector:
+    type: http
+    port: 8960
+
+logging:
+  level: INFO
+  loggers:
+    org.aja: DEBUG
