@@ -4,6 +4,7 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.aja.client.UserClient;
+import org.aja.mapper.WebApplicationExceptionMapper;
 import org.aja.resources.UserResource;
 
 
@@ -29,6 +30,7 @@ public class BlogApplication extends Application<BlogConfiguration> {
         // TODO: implement application
 
         environment.jersey().register(new UserResource(new UserClient()));
+        environment.jersey().register(new WebApplicationExceptionMapper());
     }
 
 }

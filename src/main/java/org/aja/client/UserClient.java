@@ -26,43 +26,33 @@ import java.util.List;
 
 public class UserClient {
 
+    private final static String URL = "https://jsonplaceholder.typicode.com/users";
 
     public List<User> getUsers() {
 
         try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
-            HttpGet httpGet = new HttpGet("https://jsonplaceholder.typicode.com/users");
+            HttpGet httpGet = new HttpGet(URL);
 
-
-
-            ResponseHandler<List<User>> rh = new ResponseHandler<List<User>>() {
-
-                @Override
-                public List<User> handleResponse(
-                        final HttpResponse response) throws IOException {
-                    StatusLine statusLine = response.getStatusLine();
-                    HttpEntity entity = response.getEntity();
-                    if (statusLine.getStatusCode() >= 300) {
-                        throw new HttpResponseException(
-                                statusLine.getStatusCode(),
-                                statusLine.getReasonPhrase());
-                    }
-                    if (entity == null) {
-                        throw new ClientProtocolException("Response contains no content");
-                    }
-                    Gson gson = new GsonBuilder().create();
-                    ContentType contentType = ContentType.getOrDefault(entity);
-                    Charset charset = contentType.getCharset();
-                    Reader reader = new InputStreamReader(entity.getContent(), charset);
-
-                    Type collectionType = new TypeToken<Collection<User>>(){}.getType();
-                    //Collection<User> enums = gson.fromJson(yourJson, collectionType);
-
-
-                    return gson.fromJson(reader, collectionType);
+            ResponseHandler<List<User>> rh = response -> {
+                StatusLine statusLine = response.getStatusLine();
+                HttpEntity entity = response.getEntity();
+                if (statusLine.getStatusCode() >= 300) {
+                    throw new HttpResponseException(
+                            statusLine.getStatusCode(),
+                            statusLine.getReasonPhrase());
                 }
-            };
+                if (entity == null) {
+                    throw new ClientProtocolException("No content");
+                }
+                Gson gson = new GsonBuilder().create();
+                ContentType contentType = ContentType.getOrDefault(entity);
+                Charset charset = contentType.getCharset();
+                Reader reader = new InputStreamReader(entity.getContent(), charset);
 
+                Type collectionType = new TypeToken<Collection<User>>(){}.getType();
+                return gson.fromJson(reader, collectionType);
+            };
 
             return httpclient.execute(httpGet, rh);
 

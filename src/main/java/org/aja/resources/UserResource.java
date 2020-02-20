@@ -1,14 +1,14 @@
 package org.aja.resources;
 
 
+import org.aja.api.User;
 import org.aja.client.UserClient;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -35,4 +35,20 @@ public class UserResource {
             }
         });
     }
+
+    @GET()
+    @Path("/{user}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user) {
+
+
+            if (user.equals("ERROR")) {
+                throw new WebApplicationException();
+            }
+
+            resp.resume(new User(user));
+
+
+    }
+
 }
