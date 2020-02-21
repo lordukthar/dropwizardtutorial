@@ -26,7 +26,7 @@ import java.util.List;
 
 public class UserClient {
 
-    private final static String URL = "https://jsonplaceholder.typicode.com/users";
+    private final static String URL = "http://jsonplaceholder.typicode.com/users";
 
     public List<User> getUsers() {
 

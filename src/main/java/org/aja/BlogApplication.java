@@ -4,8 +4,11 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.aja.client.UserClient;
+import org.aja.jwt.JwtAuthFilter;
 import org.aja.mapper.WebApplicationExceptionMapper;
 import org.aja.resources.UserResource;
+
+import javax.ws.rs.container.DynamicFeature;
 
 
 public class BlogApplication extends Application<BlogConfiguration> {
@@ -27,10 +30,17 @@ public class BlogApplication extends Application<BlogConfiguration> {
     @Override
     public void run(final BlogConfiguration configuration,
                     final Environment environment) {
-        // TODO: implement application
 
         environment.jersey().register(new UserResource(new UserClient()));
         environment.jersey().register(new WebApplicationExceptionMapper());
+
+        JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
+
+        environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
+            if (UserResource.class.equals(resourceInfo.getResourceClass())) {
+                context.register(jwtAuthFilter);
+            }
+        });
     }
 
 }

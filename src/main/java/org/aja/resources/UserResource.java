@@ -4,10 +4,14 @@ package org.aja.resources;
 import org.aja.api.User;
 import org.aja.client.UserClient;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -37,9 +41,10 @@ public class UserResource {
     }
 
     @GET()
+    @PermitAll
     @Path("/{user}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user) {
+    public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user, @Context SecurityContext context) {
 
 
             if (user.equals("ERROR")) {
