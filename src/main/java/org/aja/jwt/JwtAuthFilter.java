@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import javax.annotation.Priority;
 import javax.crypto.KeyGenerator;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -17,8 +18,9 @@ import java.security.Key;
 import java.security.Principal;
 import java.util.regex.Pattern;
 
-@Priority(1000)
-public final class JwtAuthFilter<P extends Principal> implements ContainerRequestFilter {
+@Priority(Priorities.AUTHORIZATION)
+public final class JwtAuthFilter<P extends Principal>
+        implements ContainerRequestFilter {
 
         private static final Pattern AUTHORIZATION_HEADER_PATTERN = Pattern.compile("Bearer ([^.]+\\.[^.]+\\.[^.]+)");
         private static final String AUTHENTICATION_SCHEME_NAME = "JWT";

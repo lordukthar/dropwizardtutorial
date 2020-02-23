@@ -41,7 +41,6 @@ public class UserResource {
     }
 
     @GET()
-    @PermitAll
     @Path("/{user}")
     @Produces(MediaType.APPLICATION_JSON)
     public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user, @Context SecurityContext context) {
