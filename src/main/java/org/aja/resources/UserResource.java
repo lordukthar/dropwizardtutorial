@@ -34,31 +34,34 @@ public class UserResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @ManagedAsync
     public void getUsers(@Suspended final AsyncResponse resp) {
 
         System.out.println(Thread.currentThread().getName());
 
-        resp.resume(Response.status(200).entity(Arrays.asList(userClient.getUser("aaa"))).build());
+        resp.resume(Response.status(200).entity(userClient.getUsers()).build());
     }
 
     @GET()
     @Path("/{user}")
     @Produces(MediaType.APPLICATION_JSON)
+    @ManagedAsync
     public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user) throws WebApplicationException {
-
-
-       // try {
 
         System.out.println(Thread.currentThread().getName());
 
+        resp.resume(Response.status(200).entity(userClient.getUser(user)).build());
 
-        executor.execute(() -> {
+
+
+
+        /*executor.execute(() -> {
             try {
                 resp.resume(Response.status(200).entity(userClient.getUser(user)).build());
             } catch (Exception e) {
                 resp.resume(e);
             }
-        });
+        });*/
 
 
 

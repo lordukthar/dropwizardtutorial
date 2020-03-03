@@ -19,6 +19,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
@@ -26,6 +28,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class ClientTest {
@@ -123,8 +126,25 @@ public class ClientTest {
 
     }
 
+    @Test
+    public void testAsynch() throws Exception {
+        final WebTarget target = ClientBuilder.newClient()
+                .target("http://localhost:8960/blog-service/users");
+
+
+        for (int i = 0; i < 50; i++) {
+            Future<User> user = target
+                    .path("/{user}")
+                    .resolveTemplate("user", "Jonas")
+                    .request()
+                    .async()
+                    .get(User.class);
+        }
+
 
     }
+
+}
 
 
 

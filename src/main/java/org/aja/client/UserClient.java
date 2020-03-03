@@ -5,11 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.aja.api.User;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -37,9 +39,17 @@ public class UserClient {
 
     public List<User> getUsers() {
 
+        System.out.println("Client getUsers" + Thread.currentThread().getName());
+
         try {
+            HttpHost proxy = new HttpHost("trend3.xxx.ad", 8080, "http");
+            RequestConfig.Builder reqconfigconbuilder= RequestConfig.custom();
+            reqconfigconbuilder = reqconfigconbuilder.setProxy(proxy);
+            RequestConfig config = reqconfigconbuilder.build();
+
             CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpGet httpGet = new HttpGet(URL);
+            httpGet.setConfig(config);
 
             ResponseHandler<List<User>> rh = response -> {
                 StatusLine statusLine = response.getStatusLine();
