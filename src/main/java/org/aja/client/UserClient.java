@@ -28,6 +28,13 @@ public class UserClient {
 
     private final static String URL = "http://jsonplaceholder.typicode.com/users";
 
+
+    public User getUser(String name) {
+        System.out.println("UserClient: " + Thread.currentThread().getName());
+        return new User(name);
+    }
+
+
     public List<User> getUsers() {
 
         try {

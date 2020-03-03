@@ -31,16 +31,16 @@ public class BlogApplication extends Application<BlogConfiguration> {
     public void run(final BlogConfiguration configuration,
                     final Environment environment) {
 
-        environment.jersey().register(new UserResource(new UserClient()));
         environment.jersey().register(new WebApplicationExceptionMapper());
+        environment.jersey().register(new UserResource(new UserClient()));
 
         JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
 
-        environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
+       /* environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
             if (UserResource.class.equals(resourceInfo.getResourceClass())) {
                 context.register(jwtAuthFilter);
             }
-        });
+        });*/
     }
 
 }
