@@ -12,12 +12,11 @@ public class User {
     private final String name;
 
     @JsonProperty("links")
-    private final List<Self> links;
+    private List<Self> links;
 
     @ConstructorProperties({"name"})
     public User(String name) {
         this.name = name;
-        this.links = Arrays.asList(new Self("http://localhost:8960/blog-service/users/"+name));
     }
 
     public String getName() {
@@ -25,6 +24,7 @@ public class User {
     }
 
     public List<Self> getLinks() {
-        return links;
+
+        return Arrays.asList(new Self("http://localhost:8960/blog-service/users/"+name));
     }
 }
