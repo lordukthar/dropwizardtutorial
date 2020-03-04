@@ -42,6 +42,18 @@ public class UserResource {
         resp.resume(Response.status(200).entity(userClient.getUsers()).build());
     }
 
+
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ManagedAsync
+    public void create(@Suspended final AsyncResponse resp, @Context SecurityContext context) {
+
+        System.out.println(Thread.currentThread().getName());
+
+        resp.resume(Response.status(200).entity(userClient.getUsers()).build());
+    }
+
     @GET()
     @Path("/{user}")
     @Produces(MediaType.APPLICATION_JSON)
