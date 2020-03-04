@@ -4,6 +4,7 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.aja.client.UserClient;
+import org.aja.filter.HeaderLoggingFilter;
 import org.aja.jwt.JwtAuthFilter;
 import org.aja.mapper.WebApplicationExceptionMapper;
 import org.aja.resources.UserResource;
@@ -33,14 +34,15 @@ public class BlogApplication extends Application<BlogConfiguration> {
 
         environment.jersey().register(new WebApplicationExceptionMapper());
         environment.jersey().register(new UserResource(new UserClient()));
+        environment.jersey().register(new HeaderLoggingFilter());
 
         JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
 
-       /* environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
+        environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
             if (UserResource.class.equals(resourceInfo.getResourceClass())) {
                 context.register(jwtAuthFilter);
             }
-        });*/
+        });
     }
 
 }

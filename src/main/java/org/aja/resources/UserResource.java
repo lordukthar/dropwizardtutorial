@@ -35,7 +35,7 @@ public class UserResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsers(@Suspended final AsyncResponse resp) {
+    public void getUsers(@Suspended final AsyncResponse resp, @Context SecurityContext context) {
 
         System.out.println(Thread.currentThread().getName());
 
@@ -46,7 +46,7 @@ public class UserResource {
     @Path("/{user}")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user) throws WebApplicationException {
+    public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user, @Context SecurityContext context) throws WebApplicationException {
 
         System.out.println(Thread.currentThread().getName());
 
