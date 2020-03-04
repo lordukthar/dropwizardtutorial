@@ -42,7 +42,10 @@ public class UserClient {
         System.out.println("Client getUsers" + Thread.currentThread().getName());
 
         try {
+
             HttpHost proxy = new HttpHost("trend3.sbab.ad", 8080, "http");
+
+
             RequestConfig.Builder reqconfigconbuilder= RequestConfig.custom();
             reqconfigconbuilder = reqconfigconbuilder.setProxy(proxy);
             RequestConfig config = reqconfigconbuilder.build();
