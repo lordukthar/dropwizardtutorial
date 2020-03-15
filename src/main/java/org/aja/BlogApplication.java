@@ -8,6 +8,7 @@ import org.aja.filter.HeaderLoggingFilter;
 import org.aja.jwt.JwtAuthFilter;
 import org.aja.mapper.WebApplicationExceptionMapper;
 import org.aja.resources.UserResource;
+import org.aja.service.UserService;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -44,7 +45,7 @@ public class BlogApplication extends Application<BlogConfiguration> {
                 .maxThreads(200)
                 .build();
 
-        for (int i = 0; i < 10; i++) {
+        /*for (int i = 0; i < 10; i++) {
             executorService.execute(() -> {
                 try {
                     Thread.sleep(1000);
@@ -53,18 +54,18 @@ public class BlogApplication extends Application<BlogConfiguration> {
                    e.printStackTrace();
                 }
             });
-        }
+        }*/
 
 
         environment.jersey().register(new WebApplicationExceptionMapper());
-        environment.jersey().register(new UserResource(executorService, new UserClient()));
+        environment.jersey().register(new UserResource(executorService, new UserService(new UserClient())));
         environment.jersey().register(new HeaderLoggingFilter());
 
         environment.jersey().register(new LoggingFeature(Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME),
                 Level.INFO, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
 
 
-        JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
+       /* JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
 
         environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
             if (UserResource.class.equals(resourceInfo.getResourceClass())) {
@@ -72,7 +73,7 @@ public class BlogApplication extends Application<BlogConfiguration> {
             }
         });
 
-
+*/
 
     }
 
