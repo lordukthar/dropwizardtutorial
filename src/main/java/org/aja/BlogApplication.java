@@ -45,6 +45,7 @@ public class BlogApplication extends Application<BlogConfiguration> {
                 .maxThreads(200)
                 .build();
 
+        //Example for loop
         /*for (int i = 0; i < 10; i++) {
             executorService.execute(() -> {
                 try {
@@ -65,16 +66,13 @@ public class BlogApplication extends Application<BlogConfiguration> {
                 Level.INFO, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
 
 
-       /* JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
+       JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
 
         environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
             if (UserResource.class.equals(resourceInfo.getResourceClass())) {
                 context.register(jwtAuthFilter);
             }
         });
-
-*/
-
     }
 
 }
