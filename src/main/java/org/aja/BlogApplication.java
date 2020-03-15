@@ -12,6 +12,8 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.core.Response;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,8 +38,26 @@ public class BlogApplication extends Application<BlogConfiguration> {
     public void run(final BlogConfiguration configuration,
                     final Environment environment) {
 
+        ExecutorService executorService = environment.lifecycle()
+                .executorService("my-pool-%d")
+                 .minThreads(10)
+                .maxThreads(200)
+                .build();
+
+        for (int i = 0; i < 10; i++) {
+            executorService.execute(() -> {
+                try {
+                    Thread.sleep(1000);
+                    System.out.println("T" + Thread.currentThread().getName());
+                } catch (Exception e) {
+                   e.printStackTrace();
+                }
+            });
+        }
+
+
         environment.jersey().register(new WebApplicationExceptionMapper());
-        environment.jersey().register(new UserResource(new UserClient()));
+        environment.jersey().register(new UserResource(executorService, new UserClient()));
         environment.jersey().register(new HeaderLoggingFilter());
 
         environment.jersey().register(new LoggingFeature(Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME),
@@ -51,6 +71,9 @@ public class BlogApplication extends Application<BlogConfiguration> {
                 context.register(jwtAuthFilter);
             }
         });
+
+
+
     }
 
 }
