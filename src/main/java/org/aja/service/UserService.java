@@ -24,9 +24,6 @@ public class UserService {
     }
 
     public Callable<List<User>> users() throws Exception {
-
-        System.out.println("TH" + System.currentTimeMillis());
-
         return () -> getUsers();
     }
 }

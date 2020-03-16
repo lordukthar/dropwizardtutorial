@@ -2,12 +2,16 @@ package org.aja.resources;
 
 
 import org.aja.api.User;
-import org.aja.client.UserClient;
 import org.aja.service.UserService;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
@@ -22,8 +26,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Path("/users")
 public class UserResource {
@@ -111,11 +113,44 @@ public class UserResource {
 
     }
 
+    //The OLD executorservice way
     @GET()
     @Path("/test/exec")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsersByExecutor(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
+    public void getUsersByExecutor(@Suspended final AsyncResponse resp) throws Exception {
+
+        long startTime = System.currentTimeMillis();
+        log.info(Thread.currentThread().getName());
+
+        Callable<List<User>> users1 = userService.users();
+        Callable<List<User>> users2 = userService.users();
+        Callable<List<User>> users3 = userService.users();
+
+        final List<Future<List<User>>> futures = executorService.invokeAll(Arrays.asList(users1, users2, users3));
+
+        List<User> users = new ArrayList<>();
+
+        try {
+            for (Future<List<User> >fus : futures) {
+                users.addAll(fus.get());
+            }
+
+            resp.resume(Response.status(200).entity(users).build());
+
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long time = endTime-startTime;
+            log.info("Millis roundtrip: " + time);
+        }
+    }
+
+    //The fork join
+    @GET()
+    @Path("/test/fork")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ManagedAsync
+    public void getUsersByForJoin(@Suspended final AsyncResponse resp) throws Exception {
 
         long startTime = System.currentTimeMillis();
         log.info(Thread.currentThread().getName());
@@ -128,15 +163,15 @@ public class UserResource {
         final Future<List<User>> submit2 = executorService.submit(users2);
         final Future<List<User>> submit3 = executorService.submit(users3);
 
-        executorService.invokeAll(Arrays.asList(users1, users2, users3));
+        //executorService.invokeAll(Arrays.asList(users1, users2, users3));
 
         List<User> users = new ArrayList<>();
 
         try {
-             users.addAll(submit1.get());
-                users.addAll(submit2.get());
-                users.addAll(submit3.get());
-                resp.resume(Response.status(200).entity(users).build());
+            users.addAll(submit1.get());
+            users.addAll(submit2.get());
+            users.addAll(submit3.get());
+            resp.resume(Response.status(200).entity(users).build());
 
         } finally {
             long endTime = System.currentTimeMillis();
