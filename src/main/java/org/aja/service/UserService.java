@@ -14,8 +14,14 @@ public class UserService {
         this.userClient = userClient;
     }
 
-    public List<User> getUsers() throws Exception {
-        Thread.sleep(1000);
+    public List<User> getUsers() {
+        System.out.println("GET USERS -------------------------------------------->");
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return userClient.getUsers();
     }
 

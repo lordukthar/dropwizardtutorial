@@ -2,6 +2,7 @@ package org.aja.resources;
 
 
 import org.aja.api.User;
+import org.aja.service.ForkJoinTask;
 import org.aja.service.UserService;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ManagedAsync;
@@ -25,7 +26,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @Path("/users")
 public class UserResource {
@@ -34,6 +37,7 @@ public class UserResource {
     private final ExecutorService executorService;
     private final UserService userService;
     Logger log = Logger.getLogger("UserResource");
+    ForkJoinPool pool = new ForkJoinPool(10);
 
     public UserResource(ExecutorService executorService, UserService userService) {
         this.executorService = executorService;
@@ -118,7 +122,7 @@ public class UserResource {
     @Path("/test/exec")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsersByExecutor(@Suspended final AsyncResponse resp) throws Exception {
+    public void getUsersByExecutor(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
 
         long startTime = System.currentTimeMillis();
         log.info(Thread.currentThread().getName());
@@ -152,25 +156,20 @@ public class UserResource {
     @ManagedAsync
     public void getUsersByForJoin(@Suspended final AsyncResponse resp) throws Exception {
 
+
         long startTime = System.currentTimeMillis();
         log.info(Thread.currentThread().getName());
 
-        final Callable<List<User>> users1 = userService.users();
-        final Callable<List<User>> users2 = userService.users();
-        final Callable<List<User>> users3 = userService.users();
+        final ForkJoinTask forkJoinTask = new ForkJoinTask(userService);
+        final ForkJoinTask forkJoinTask1 = new ForkJoinTask(userService);
 
-        final Future<List<User>> submit1 = executorService.submit(users1);
-        final Future<List<User>> submit2 = executorService.submit(users2);
-        final Future<List<User>> submit3 = executorService.submit(users3);
+        pool.execute(forkJoinTask);
+        pool.execute(forkJoinTask1);
 
-        //executorService.invokeAll(Arrays.asList(users1, users2, users3));
-
-        List<User> users = new ArrayList<>();
+        List<User> users = forkJoinTask.join();
+        users.addAll(forkJoinTask1.join());
 
         try {
-            users.addAll(submit1.get());
-            users.addAll(submit2.get());
-            users.addAll(submit3.get());
             resp.resume(Response.status(200).entity(users).build());
 
         } finally {
