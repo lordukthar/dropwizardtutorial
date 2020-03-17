@@ -9,3 +9,15 @@ logging:
   level: INFO
   loggers:
     org.aja: DEBUG
+
+userUri: http://jsonplaceholder.typicode.com
+
+
+jerseyClient:
+  timeout: 30000ms
+  minThreads: 10
+  workQueueSize: 10
+  proxy:
+    host: 'trend3.sbab.ad'
+    port: 8080
+    scheme: 'http'

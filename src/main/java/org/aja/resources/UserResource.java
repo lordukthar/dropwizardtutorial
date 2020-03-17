@@ -102,7 +102,7 @@ public class UserResource {
     @Path("/test/thread")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsersByThread(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
+    public void getUsersByThread(@Suspended final AsyncResponse resp) throws Exception {
 
         log.info("getUsersByThread" + Thread.currentThread().getName());
         new Thread(() -> {
@@ -180,5 +180,35 @@ public class UserResource {
     }
 
     //rxJava way
+    @GET()
+    @Path("/test/rxjava")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ManagedAsync
+    public void getUsersByRxJava(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
 
+        log.info("managed------------------------->" + Thread.currentThread().getName());
+
+        long startTime = System.currentTimeMillis();
+        try {
+
+        userService.getObservableUsers()
+                .timeout(30, TimeUnit.SECONDS)
+                .subscribe((users) -> {
+                    log.info("getObservableUsers------------------------->" + Thread.currentThread().getName());
+                    resp.resume(Response.status(200).entity(users).build());
+                },
+                 throwable -> {
+                    log.info("getObservableUsers t------------------------->" + Thread.currentThread().getName());
+                    resp.resume(Response.status(500).build());
+                });
+
+
+
+
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long time = endTime-startTime;
+            log.info("Millis roundtrip: " + time);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package org.aja;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.aja.client.RxUserClient;
 import org.aja.client.UserClient;
 import org.aja.filter.HeaderLoggingFilter;
 import org.aja.jwt.JwtAuthFilter;
@@ -14,6 +15,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,8 +60,10 @@ public class BlogApplication extends Application<BlogConfiguration> {
         }*/
 
 
+        RxUserClient rxUserClient = configuration.RxUserClient(environment);
+
         environment.jersey().register(new WebApplicationExceptionMapper());
-        environment.jersey().register(new UserResource(executorService, new UserService(new UserClient())));
+        environment.jersey().register(new UserResource(executorService, new UserService(new UserClient(), rxUserClient)));
         environment.jersey().register(new HeaderLoggingFilter());
 
         environment.jersey().register(new LoggingFeature(Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME),
