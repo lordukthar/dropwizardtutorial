@@ -66,13 +66,13 @@ public class BlogApplication extends Application<BlogConfiguration> {
                 Level.INFO, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
 
 
-     /* JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
+      JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
 
         environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
             if (UserResource.class.equals(resourceInfo.getResourceClass())) {
                 context.register(jwtAuthFilter);
             }
-        });*/
+        });
     }
 
 }

@@ -154,7 +154,7 @@ public class UserResource {
     @Path("/test/fork")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsersByForJoin(@Suspended final AsyncResponse resp) throws Exception {
+    public void getUsersByForJoin(@Suspended final AsyncResponse resp, @Context SecurityContext context){
 
 
         long startTime = System.currentTimeMillis();
@@ -178,5 +178,7 @@ public class UserResource {
             log.info("Millis roundtrip: " + time);
         }
     }
+
+    //rxJava way
 
 }
