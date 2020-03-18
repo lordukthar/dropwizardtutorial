@@ -184,7 +184,7 @@ public class UserResource {
     @Path("/test/rxjava")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsersByRxJava(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
+    public void getUsersByRxJava(@Suspended final AsyncResponse resp) throws Exception {
 
         log.info("managed------------------------->" + Thread.currentThread().getName());
 
