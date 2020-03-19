@@ -17,7 +17,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     public Response toResponse(WebApplicationException exception) {
         log.error("WebApplicationExceptionMapper");
         return Response.status(404)
-                .entity(new User("404"))
+                .entity(new User("404", 1))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }

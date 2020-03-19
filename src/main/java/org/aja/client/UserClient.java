@@ -33,7 +33,7 @@ public class UserClient {
 
     public User getUser(String name) {
         System.out.println("UserClient: " + Thread.currentThread().getName());
-        return new User(name);
+        return new User(name, 1);
     }
 
 

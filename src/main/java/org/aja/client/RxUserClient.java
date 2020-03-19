@@ -46,4 +46,12 @@ public class RxUserClient {
                 .get(USERS_LIST);
     }
 
+    public Observable<User> getUserAsync(int id) {
+        return  client.target(baseUri)
+                .path(USERS_PATH+"/"+id)
+                .request()
+                .rx(threadPoolExecutor)
+                .get(User.class);
+    }
+
 }

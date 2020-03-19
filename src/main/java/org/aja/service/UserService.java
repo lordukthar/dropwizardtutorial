@@ -58,4 +58,57 @@ public class UserService {
             throw new WebApplicationException(throwable);
         };
     }
+
+    private Func1<Throwable, User> emptyUser() {
+        return throwable -> {
+            System.out.println("ERR---------->" + throwable);
+            throw new WebApplicationException(throwable);
+        };
+    }
+
+
+    //now lets fetch all users then match it to one user and return that user's data.
+    public Observable<User> getObservableUser(String userName) throws Exception {
+
+        System.out.println("-----------------------------------");
+
+
+
+        var user =  Observable.defer(() -> rxUserClient.getUsersAsync()
+                .flatMapIterable(x -> x)
+                .filter(u -> u.getName().equalsIgnoreCase(userName))
+                .first()
+                .timeout(5, TimeUnit.SECONDS)
+                .doOnSubscribe(()
+                        -> System.out.println("defer getObservableUsers------------------------->" + Thread.currentThread().getName()))
+                .subscribeOn(Schedulers.newThread())
+                .onErrorReturn(emptyUser())
+                .doOnTerminate(() -> System.out.println("INFO -----> terminating" )));
+
+        //return user;
+
+
+        /*
+
+        var user = Observable.defer(() -> rxUserClient.getUsersAsync()
+                .flatMap(Observable::from)
+                .filter(u -> u.getName().equalsIgnoreCase(userName))
+                .timeout(5, TimeUnit.SECONDS)
+                .doOnSubscribe(()
+                        -> System.out.println("defer getObservableUser------------------------->" + Thread.currentThread().getName()))
+                .onErrorReturn(emptyUser())
+                .doOnTerminate(() -> System.out.println("INFO -----> terminating" )));
+
+        System.out.println("-----------------------------------");
+
+        return user;*/
+
+        return user.flatMap(u -> Observable.defer(() ->
+                rxUserClient.getUserAsync(u.getId())
+                        .doOnSubscribe(()
+                                -> System.out.println("defer getObservableUser 2------------------------->" + Thread.currentThread().getName()))
+
+                        .subscribeOn(Schedulers.io())));
+    }
+
 }

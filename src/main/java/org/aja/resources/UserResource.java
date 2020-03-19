@@ -211,4 +211,37 @@ public class UserResource {
             log.info("Millis roundtrip: " + time);
         }
     }
+
+    //rxJava way
+    @GET()
+    @Path("/test/rxjava/{user}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ManagedAsync
+    public void getUserByRxJava(@Suspended final AsyncResponse resp, @PathParam("user") String user) throws Exception {
+
+        log.info("managed------------------------->" + Thread.currentThread().getName());
+
+        long startTime = System.currentTimeMillis();
+        try {
+
+            userService.getObservableUser(user)
+                    .timeout(30, TimeUnit.SECONDS)
+                    .subscribe((u) -> {
+                                log.info("getObservableUser------------------------->" + Thread.currentThread().getName());
+                                resp.resume(Response.status(200).entity(u).build());
+                            },
+                            throwable -> {
+                                log.info("getObservableUser t------------------------->" + Thread.currentThread().getName());
+                                resp.resume(Response.status(500).build());
+                            });
+
+
+
+
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long time = endTime-startTime;
+            log.info("Millis roundtrip: " + time);
+        }
+    }
 }

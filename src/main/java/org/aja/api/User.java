@@ -17,13 +17,21 @@ public class User {
     @JsonProperty("links")
     private List<Self> links;
 
-    @ConstructorProperties({"name"})
-    public User(String name) {
+    @JsonProperty
+    private int id;
+
+    @ConstructorProperties({"name", "id"})
+    public User(String name, int id) {
         this.name = name;
+        this.id = id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public List<Self> getLinks() {
