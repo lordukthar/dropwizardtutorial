@@ -17,7 +17,7 @@ jerseyClient:
   timeout: 30000ms
   minThreads: 10
   workQueueSize: 10
-  proxy:
-    host: 'trend3.sbab.ad'
-    port: 8080
-    scheme: 'http'
+  #proxy:
+   # host: 'trend3.sbab.ad'
+   # port: 8080
+   # scheme: 'http'

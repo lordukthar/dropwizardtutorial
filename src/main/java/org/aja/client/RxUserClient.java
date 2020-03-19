@@ -1,5 +1,6 @@
 package org.aja.client;
 
+import org.aja.api.Post;
 import org.aja.api.User;
 import org.apache.http.HttpHost;
 import org.glassfish.jersey.client.rx.RxClient;
@@ -22,6 +23,9 @@ public class RxUserClient {
     private static final GenericType<List<User>> USERS_LIST = new GenericType<>() {
     };
 
+    private static final GenericType<List<Post>> POSTS_LIST = new GenericType<>() {
+    };
+
     HttpHost proxy = new HttpHost("trend3.sbab.ad", 8080, "http");
 
     private final ExecutorService threadPoolExecutor = new ThreadPoolExecutor(10, 200,
@@ -31,6 +35,7 @@ public class RxUserClient {
     private final RxClient<RxObservableInvoker> client;
 
     private final static String USERS_PATH = "/users";
+    private final static String POSTS_PATH = "/posts";
     private final  URI baseUri;
 
     public RxUserClient(RxClient<RxObservableInvoker> client, URI baseUri) {
@@ -44,6 +49,15 @@ public class RxUserClient {
                 .request()
                 .rx(threadPoolExecutor)
                 .get(USERS_LIST);
+    }
+
+    //fetch posts
+    public Observable<List<Post>> getPostsAsync() {
+        return  client.target(baseUri)
+                .path(POSTS_PATH)
+                .request()
+                .rx(threadPoolExecutor)
+                .get(POSTS_LIST);
     }
 
     public Observable<User> getUserAsync(int id) {
