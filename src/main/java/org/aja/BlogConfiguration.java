@@ -41,8 +41,8 @@ public class BlogConfiguration extends Configuration {
     public RxClient<RxObservableInvoker> rxClient(Environment environment, String clientName) {
 
         return new JerseyClientBuilder(environment)
-                .withProperty(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY)
-                .withProperty(LoggingFeature.LOGGING_FEATURE_LOGGER_LEVEL_CLIENT, "INFO")
+               // .withProperty(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY)
+                //.withProperty(LoggingFeature.LOGGING_FEATURE_LOGGER_LEVEL_CLIENT, "INFO")
                 .using(this.jerseyClient)
                 .buildRx(clientName, RxObservableInvoker.class);
     }

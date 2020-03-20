@@ -23,9 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -33,11 +31,10 @@ import java.util.concurrent.TimeUnit;
 @Path("/users")
 public class UserResource {
 
-    private final Executor executor = Executors.newFixedThreadPool(200);
     private final ExecutorService executorService;
     private final UserService userService;
-    Logger log = Logger.getLogger("UserResource");
-    ForkJoinPool pool = new ForkJoinPool(10);
+    private Logger log = Logger.getLogger("UserResource");
+    private ForkJoinPool pool = new ForkJoinPool(10);
 
     public UserResource(ExecutorService executorService, UserService userService) {
         this.executorService = executorService;
@@ -50,7 +47,7 @@ public class UserResource {
     @ManagedAsync
     public void getUsers(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
         long startTime = System.currentTimeMillis();
-        log.info(Thread.currentThread().getName());
+        log.info("getUsers:" + Thread.currentThread().getName());
 
         try {
             resp.resume(Response.status(200).entity(userService.getUsers()).build());
@@ -65,9 +62,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @ManagedAsync
     public void create(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
-
         log.info(Thread.currentThread().getName());
-
         resp.resume(Response.status(200).entity(userService.getUsers()).build());
     }
 
@@ -76,26 +71,8 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
     public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user, @Context SecurityContext context) throws Exception {
-
-        log.info(Thread.currentThread().getName());
-
+        log.info("getUser:" + Thread.currentThread().getName());
         resp.resume(Response.status(200).entity(userService.getUser(user)).build());
-
-
-
-
-        /*executor.execute(() -> {
-            try {
-                resp.resume(Response.status(200).entity(userClient.getUser(user)).build());
-            } catch (Exception e) {
-                resp.resume(e);
-            }
-        });*/
-
-
-
-
-
     }
 
     @GET()
@@ -104,11 +81,11 @@ public class UserResource {
     @ManagedAsync
     public void getUsersByThread(@Suspended final AsyncResponse resp) throws Exception {
 
-        log.info("getUsersByThread" + Thread.currentThread().getName());
+        log.info("getUsersByThread:" + Thread.currentThread().getName());
         new Thread(() -> {
             try {
                 Thread.sleep(1000);
-                log.info("T" + Thread.currentThread().getName());
+                log.info("getUsersByThread:" + Thread.currentThread().getName());
                 resp.resume(Response.status(200).entity(userService.getUsers()).build());
             } catch (Exception e) {
                 resp.resume(e);
@@ -125,7 +102,7 @@ public class UserResource {
     public void getUsersByExecutor(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
 
         long startTime = System.currentTimeMillis();
-        log.info(Thread.currentThread().getName());
+        log.info("getUsersByExecutor:" + Thread.currentThread().getName());
 
         Callable<List<User>> users1 = userService.users();
         Callable<List<User>> users2 = userService.users();
@@ -158,7 +135,7 @@ public class UserResource {
 
 
         long startTime = System.currentTimeMillis();
-        log.info(Thread.currentThread().getName());
+        log.info("getUsersByForJoin:" + Thread.currentThread().getName());
 
         final ForkJoinTask forkJoinTask = new ForkJoinTask(userService);
         final ForkJoinTask forkJoinTask1 = new ForkJoinTask(userService);
@@ -184,9 +161,9 @@ public class UserResource {
     @Path("/test/rxjava")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsersByRxJava(@Suspended final AsyncResponse resp) throws Exception {
+    public void getUsersByRxJava(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
 
-        log.info("managed------------------------->" + Thread.currentThread().getName());
+        log.info("getUsersByRxJava_1:"  + Thread.currentThread().getName());
 
         long startTime = System.currentTimeMillis();
         try {
@@ -194,11 +171,11 @@ public class UserResource {
         userService.getObservableUsers()
                 .timeout(30, TimeUnit.SECONDS)
                 .subscribe((users) -> {
-                    log.info("getObservableUsers------------------------->" + Thread.currentThread().getName());
+                    log.info("getUsersByRxJava_2:"  + Thread.currentThread().getName());
                     resp.resume(Response.status(200).entity(users).build());
                 },
                  throwable -> {
-                    log.info("getObservableUsers t------------------------->" + Thread.currentThread().getName());
+                    log.info("getUsersByRxJava_3:"  +  Thread.currentThread().getName());
                     resp.resume(Response.status(500).build());
                 });
 
@@ -217,9 +194,9 @@ public class UserResource {
     @Path("/test/rxjava/{user}")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUserByRxJava(@Suspended final AsyncResponse resp, @PathParam("user") String user) throws Exception {
+    public void getUserByRxJava(@Suspended final AsyncResponse resp, @PathParam("user") String user, @Context SecurityContext context) throws Exception {
 
-        log.info("managed------------------------->" + Thread.currentThread().getName());
+        log.info("getUserByRxJava:"  + Thread.currentThread().getName());
 
         long startTime = System.currentTimeMillis();
         try {
@@ -227,16 +204,13 @@ public class UserResource {
             userService.getObservableUser(user)
                     .timeout(30, TimeUnit.SECONDS)
                     .subscribe((u) -> {
-                                log.info("getObservableUser------------------------->" + Thread.currentThread().getName());
+                                log.info("getUserByRxJava_2:"  +  Thread.currentThread().getName());
                                 resp.resume(Response.status(200).entity(u).build());
                             },
                             throwable -> {
-                                log.info("getObservableUser t------------------------->" + Thread.currentThread().getName());
+                                log.info("getUserByRxJava_3:"  +  Thread.currentThread().getName());
                                 resp.resume(Response.status(500).build());
                             });
-
-
-
 
         } finally {
             long endTime = System.currentTimeMillis();
@@ -250,9 +224,9 @@ public class UserResource {
     @Path("/test/rxjavarx/{user}")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUserByRxJavaRx(@Suspended final AsyncResponse resp, @PathParam("user") String user) throws Exception {
+    public void getUserByRxJavaRx(@Suspended final AsyncResponse resp, @PathParam("user") String user, @Context SecurityContext context) throws Exception {
 
-        log.info("managed-------------------------  --->" + Thread.currentThread().getName());
+        log.info("getUserByRxJavaRx:" + Thread.currentThread().getName());
 
         long startTime = System.currentTimeMillis();
         try {
@@ -260,16 +234,13 @@ public class UserResource {
             userService.getObservableUserPosts(user)
                     .timeout(30, TimeUnit.SECONDS)
                     .subscribe((u) -> {
-                                log.info("getObservableUser-----  -------------------->" + Thread.currentThread().getName());
+                                log.info("getUserByRxJavaRx_1" + Thread.currentThread().getName());
                                 resp.resume(Response.status(200).entity(u).build());
                             },
                             throwable -> {
-                                log.info("getObservableUser t-----  -------------------->" + Thread.currentThread().getName());
+                                log.info("getUserByRxJavaRx_2" + Thread.currentThread().getName());
                                 resp.resume(Response.status(500).build());
                             });
-
-
-
 
         } finally {
             long endTime = System.currentTimeMillis();

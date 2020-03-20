@@ -48,16 +48,15 @@ public class BlogApplication extends Application<BlogConfiguration> {
                 .build();
 
         //Example for loop
-        /*for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             executorService.execute(() -> {
                 try {
-                    Thread.sleep(1000);
                     System.out.println("T" + Thread.currentThread().getName());
                 } catch (Exception e) {
                    e.printStackTrace();
                 }
             });
-        }*/
+        }
 
 
         RxUserClient rxUserClient = configuration.RxUserClient(environment);
@@ -70,13 +69,13 @@ public class BlogApplication extends Application<BlogConfiguration> {
                 Level.INFO, LoggingFeature.Verbosity.PAYLOAD_ANY, LoggingFeature.DEFAULT_MAX_ENTITY_SIZE));
 
 
-     /* JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
+     JwtAuthFilter jwtAuthFilter = new JwtAuthFilter();
 
         environment.jersey().register((DynamicFeature) (resourceInfo, context) -> {
             if (UserResource.class.equals(resourceInfo.getResourceClass())) {
                 context.register(jwtAuthFilter);
             }
-        });*/
+        });
     }
 
 }
