@@ -81,12 +81,23 @@
             <version>2.3.1</version>
         </dependency>
 
-        <dependency>
+       <dependency>
             <groupId>org.glassfish.jersey.ext.rx</groupId>
             <artifactId>jersey-rx-client-rxjava</artifactId>
             <version>${jersey-version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.3.3.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-bus</artifactId>
+            <version>2.0.8.RELEASE</version>
+        </dependency>
 
     </dependencies>
 

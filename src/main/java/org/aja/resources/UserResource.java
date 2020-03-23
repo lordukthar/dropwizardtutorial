@@ -45,7 +45,7 @@ public class UserResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsers(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
+    public void getUsers(@Suspended final AsyncResponse resp, @Context SecurityContext context) {
         long startTime = System.currentTimeMillis();
         log.info("getUsers:" + Thread.currentThread().getName());
 
@@ -61,7 +61,7 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void create(@Suspended final AsyncResponse resp, @Context SecurityContext context) throws Exception {
+    public void create(@Suspended final AsyncResponse resp, @Context SecurityContext context) {
         log.info(Thread.currentThread().getName());
         resp.resume(Response.status(200).entity(userService.getUsers()).build());
     }
@@ -70,7 +70,7 @@ public class UserResource {
     @Path("/{user}")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user, @Context SecurityContext context) throws Exception {
+    public void getUser(@Suspended final AsyncResponse resp, @PathParam("user") String user, @Context SecurityContext context) {
         log.info("getUser:" + Thread.currentThread().getName());
         resp.resume(Response.status(200).entity(userService.getUser(user)).build());
     }
@@ -79,7 +79,7 @@ public class UserResource {
     @Path("/test/thread")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsersByThread(@Suspended final AsyncResponse resp) throws Exception {
+    public void getUsersByThread(@Suspended final AsyncResponse resp, @Context SecurityContext context) {
 
         log.info("getUsersByThread:" + Thread.currentThread().getName());
         new Thread(() -> {
@@ -131,7 +131,7 @@ public class UserResource {
     @Path("/test/fork")
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync
-    public void getUsersByForJoin(@Suspended final AsyncResponse resp, @Context SecurityContext context){
+    public void getUsersByForJoin(@Suspended final AsyncResponse resp, @Context SecurityContext context) {
 
 
         long startTime = System.currentTimeMillis();
@@ -178,10 +178,6 @@ public class UserResource {
                     log.info("getUsersByRxJava_3:"  +  Thread.currentThread().getName());
                     resp.resume(Response.status(500).build());
                 });
-
-
-
-
         } finally {
             long endTime = System.currentTimeMillis();
             long time = endTime-startTime;
@@ -211,7 +207,6 @@ public class UserResource {
                                 log.info("getUserByRxJava_3:"  +  Thread.currentThread().getName());
                                 resp.resume(Response.status(500).build());
                             });
-
         } finally {
             long endTime = System.currentTimeMillis();
             long time = endTime-startTime;
@@ -241,7 +236,6 @@ public class UserResource {
                                 log.info("getUserByRxJavaRx_2" + Thread.currentThread().getName());
                                 resp.resume(Response.status(500).build());
                             });
-
         } finally {
             long endTime = System.currentTimeMillis();
             long time = endTime-startTime;

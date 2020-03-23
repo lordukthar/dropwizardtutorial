@@ -3,7 +3,7 @@ server:
   applicationContextPath: /blog-service
   connector:
     type: http
-    port: 8960
+    port: 8970
 
 logging:
   level: INFO
