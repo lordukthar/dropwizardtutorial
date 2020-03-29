@@ -41,7 +41,6 @@ public class UserResource {
         this.userService = userService;
     }
 
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ManagedAsync

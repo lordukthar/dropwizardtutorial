@@ -8,8 +8,10 @@ import org.aja.client.UserClient;
 import org.aja.filter.HeaderLoggingFilter;
 import org.aja.jwt.JwtAuthFilter;
 import org.aja.mapper.WebApplicationExceptionMapper;
+import org.aja.resources.UserExecutorResource;
 import org.aja.resources.UserRectorResource;
 import org.aja.resources.UserResource;
+import org.aja.resources.UserThreadResource;
 import org.aja.service.SlowService;
 import org.aja.service.UserService;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -63,9 +65,13 @@ public class BlogApplication extends Application<BlogConfiguration> {
 
         RxUserClient rxUserClient = configuration.RxUserClient(environment);
         final UserClient userClient = new UserClient();
+        UserService userService = new UserService(userClient, rxUserClient);
         environment.jersey().register(new WebApplicationExceptionMapper());
-        environment.jersey().register(new UserResource(executorService, new UserService(userClient, rxUserClient)));
+        environment.jersey().register(new UserResource(executorService, userService));
         environment.jersey().register(new UserRectorResource(new SlowService(userClient)));
+        environment.jersey().register(new UserExecutorResource(executorService, userService));
+
+        environment.jersey().register(new UserThreadResource(userService));
         environment.jersey().register(new HeaderLoggingFilter());
 
         environment.jersey().register(new LoggingFeature(Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME),
